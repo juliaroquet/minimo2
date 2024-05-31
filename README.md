@@ -1,4 +1,4 @@
-Em dona un error <<Error Android Resource Linking Failed>>
+Em dona un error ErrorAndroidResourceLinkingFailed
 
 TAREAS:
 

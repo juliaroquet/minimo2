@@ -6,6 +6,8 @@ import edu.upc.dsa.martianslog.models.Product;
 import java.util.List;
 
 import edu.upc.dsa.martianslog.models.ProfileUser;
+import edu.upc.dsa.martianslog.models.Topic;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.POST;
 import retrofit2.http.Body;
@@ -39,4 +41,9 @@ public interface ApiService
 
     @POST("/store/buyProduct/{username}/{idProduct}")
     Call<List<Product>> buyProduct(@Path("username") String username, @Path("idProduct") String idProduct);
+
+
+
+    @POST("questions")
+    Call<ResponseBody> sendQuestion(@Body Topic question);
 }

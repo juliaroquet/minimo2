@@ -7,6 +7,7 @@ import edu.upc.dsa.exceptions.UserNameYaExiste;
 import edu.upc.dsa.exceptions.UserNotRegisteredException;
 import edu.upc.dsa.models.Credencials;
 import edu.upc.dsa.models.Product;
+import edu.upc.dsa.models.Question;
 import edu.upc.dsa.models.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,11 +28,11 @@ import java.util.List;
 
         public UserService() throws UserNameYaExiste {
             this.um = UserManagerImpl.getInstance();
-            if (um.getUsers().size()==0){
-                um.registerUser(new User(1,"Laura","Fernandez","lauraa8","12345"));
-                um.registerUser(new User(2,"Anna","Fernandez","annaa11","56789"));
-                um.registerUser(new User(3,"Lidon","Garcia","lidon11","56789"));
-                um.registerUser(new User(4,"Lidia","Esquius","lidia22","12345"));
+            if (um.getUsers().size() == 0) {
+                um.registerUser(new User(1, "Laura", "Fernandez", "lauraa8", "12345"));
+                um.registerUser(new User(2, "Anna", "Fernandez", "annaa11", "56789"));
+                um.registerUser(new User(3, "Lidon", "Garcia", "lidon11", "56789"));
+                um.registerUser(new User(4, "Lidia", "Esquius", "lidia22", "12345"));
             }
 
         }
@@ -48,11 +49,10 @@ import java.util.List;
         @Consumes(MediaType.APPLICATION_JSON)
         public Response register(User user) throws UserNameYaExiste {
             //if (user.getName() == null || user.getSurname()==null || user.getPassword()== null || user.getUsername() == null)  return Response.status(500).entity(user).build();
-            try{
+            try {
                 this.um.registerUser(new User(user.getIdUser(), user.getName(), user.getSurname(), user.getUsername(), user.getPassword()));
                 return Response.status(201).entity(user).build();
-            }
-            catch(UserNameYaExiste e){
+            } catch (UserNameYaExiste e) {
                 return Response.status(404).entity(user).build();
             }
 
@@ -69,25 +69,28 @@ import java.util.List;
         @Consumes(MediaType.APPLICATION_JSON)
         public Response login(Credencials credencials) throws PasswordIncorrecteException, UserNotRegisteredException {
             User user1 = this.um.loginUser(credencials.getUsername(), credencials.getPassword());
-            if(user1 != null){
+            if (user1 != null) {
                 return Response.status(201).entity(user1).build();
             }
             return Response.status(404).entity(user1).build();
         }
+
         @GET
         @ApiOperation(value = "get users", notes = "Show a list of users")
         @ApiResponses(value = {
-                @ApiResponse(code = 201, message = "Successful", response = User.class, responseContainer="List"),
+                @ApiResponse(code = 201, message = "Successful", response = User.class, responseContainer = "List"),
         })
         @Path("/getusers")
         @Produces(MediaType.APPLICATION_JSON)
         public Response getListofUsers() {
 
             List<User> lu = this.um.getUsers();
-            GenericEntity<List<User>> entity = new GenericEntity<List<User>>(lu) {};
-            return Response.status(201).entity(entity).build()  ;
+            GenericEntity<List<User>> entity = new GenericEntity<List<User>>(lu) {
+            };
+            return Response.status(201).entity(entity).build();
 
         }
+
         @GET
         @ApiOperation(value = "get a User", notes = "get a user by the id")
         @ApiResponses(value = {
@@ -99,37 +102,37 @@ import java.util.List;
         public Response getUser(@PathParam("username") String username) {
             User p = this.um.getUser(username);
             if (p == null) return Response.status(404).build();
-            else  return Response.status(201).entity(p).build();
+            else return Response.status(201).entity(p).build();
         }
 
 
         @GET
         @ApiOperation(value = "get inventario", notes = "Show the inventario of a user")
         @ApiResponses(value = {
-                @ApiResponse(code = 201, message = "Successful", response = Product.class, responseContainer="List"),
+                @ApiResponse(code = 201, message = "Successful", response = Product.class, responseContainer = "List"),
         })
         @Path("/getInventario")
         @Produces(MediaType.APPLICATION_JSON)
         public Response getInventario(@QueryParam("username") String username) throws UserNotRegisteredException {
 
             List<Product> inventario = this.um.getuserInventario(username);
-            GenericEntity<List<Product>> entity = new GenericEntity<List<Product>>(inventario) {};
-            return Response.status(201).entity(entity).build()  ;
+            GenericEntity<List<Product>> entity = new GenericEntity<List<Product>>(inventario) {
+            };
+            return Response.status(201).entity(entity).build();
         }
 
         @PUT
-        @ApiOperation(value = "update pasword", notes= "update a password from a user")
+        @ApiOperation(value = "update pasword", notes = "update a password from a user")
         @ApiResponses(value = {
                 @ApiResponse(code = 201, message = "Successfull"),
                 @ApiResponse(code = 404, message = "user not found")
         })
         @Path("/changePassword")
         public Response changePassword(@QueryParam("username") String username, @QueryParam("currentPassword") String currentPassword, @QueryParam("newPassword") String newPassword) throws UserNotRegisteredException {
-            try{
+            try {
                 User user1 = this.um.changePassword(username, currentPassword, newPassword);
                 return Response.status(201).entity(user1).build();
-            }
-            catch(UserNotRegisteredException e){
+            } catch (UserNotRegisteredException e) {
                 return Response.status(404).build();
             }
 
@@ -137,7 +140,7 @@ import java.util.List;
         }
 
         @PUT
-        @ApiOperation(value = "update username", notes= "update the username from a user")
+        @ApiOperation(value = "update username", notes = "update the username from a user")
         @ApiResponses(value = {
                 @ApiResponse(code = 201, message = "Successfull"),
                 @ApiResponse(code = 404, message = "user not found"),
@@ -147,14 +150,12 @@ import java.util.List;
         @Path("/updateUsername")
         public Response updateUsername(@QueryParam("username") String username, @QueryParam("Password") String Password, @QueryParam("newUsername") String newUsername) throws UserNotRegisteredException, PasswordIncorrecteException {
 
-            try{
+            try {
                 User user1 = this.um.changeUsername(username, Password, newUsername);
                 return Response.status(201).entity(user1).build();
-            }
-            catch(UserNotRegisteredException e){
+            } catch (UserNotRegisteredException e) {
                 return Response.status(404).entity(e.getMessage()).build();
-            }
-            catch(PasswordIncorrecteException e){
+            } catch (PasswordIncorrecteException e) {
                 return Response.status(502).entity(e.getMessage()).build();
             } catch (UserNameYaExiste e) {
                 return Response.status(501).entity(e.getMessage()).build();
@@ -162,4 +163,34 @@ import java.util.List;
 
 
         }
+
+
+        @POST
+        @ApiOperation(value = "Question/Consult of a player", notes = "Add a question/consult of a player")
+        @ApiResponses(value = {
+                @ApiResponse(code = 201, message = "Successful"),
+                @ApiResponse(code = 401, message = "Error")
+        })
+        @Path("/getQuestion")
+        @Consumes(MediaType.APPLICATION_JSON)
+        @Produces(MediaType.APPLICATION_JSON)
+        public Response getQuestion(Question question) {
+            // Aquí deberías recuperar la pregunta correspondiente al ID proporcionado en el cuerpo de la solicitud
+            // Por ahora, simularemos una pregunta estática con el ID proporcionado
+
+            int  questionId = question.getQuestionId(); // Suponiendo que hay un método para obtener el ID de pregunta del cuerpo de la solicitud
+            if (questionId == 1) {
+                question = new Question("2024-06-01", "Ejemplo de pregunta", "Mensaje de la pregunta", "Usuario123");
+            }
+
+            // Verificar si se encontró la pregunta
+            if (question != null) {
+                return Response.status(Response.Status.OK).entity(question).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        }
+
     }
+
+
